@@ -57,14 +57,14 @@ class ModeracaoController extends Controller
                 'denuncia',
                 'Denúncia resolvida',
                 'A sua denúncia foi analisada e resolvida: ' . $validated['resolucao'],
-                route('cliente.denuncias')
+                rtrim(config('app.frontend_url', ''), '/') . '/cliente/denuncias'
             );
 
             \App\Services\PushNotificationService::enviar(
                 $denuncia->cliente_id,
                 'Denúncia resolvida',
                 'A sua denúncia foi analisada e resolvida: ' . $validated['resolucao'],
-                route('cliente.denuncias')
+                rtrim(config('app.frontend_url', ''), '/') . '/cliente/denuncias'
             );
         }
 
@@ -82,14 +82,14 @@ class ModeracaoController extends Controller
                 'denuncia',
                 'Denúncia arquivada',
                 'A sua denúncia foi arquivada sem resolução após análise da nossa equipa.',
-                route('cliente.denuncias')
+                rtrim(config('app.frontend_url', ''), '/') . '/cliente/denuncias'
             );
 
             \App\Services\PushNotificationService::enviar(
                 $denuncia->cliente_id,
                 'Denúncia arquivada',
                 'A sua denúncia foi arquivada sem resolução após análise da nossa equipa.',
-                route('cliente.denuncias')
+                rtrim(config('app.frontend_url', ''), '/') . '/cliente/denuncias'
             );
         }
 
@@ -127,14 +127,14 @@ class ModeracaoController extends Controller
                 'avaliacao',
                 'Avaliação aprovada',
                 'A sua avaliação do imóvel "' . $avaliacao->imovel->titulo . '" foi aprovada e já está visível no site.',
-                route('cliente.avaliacoes')
+                rtrim(config('app.frontend_url', ''), '/') . '/cliente/avaliacoes'
             );
 
             \App\Services\PushNotificationService::enviar(
                 $avaliacao->cliente_id,
                 'Avaliação aprovada',
                 'A sua avaliação do imóvel "' . $avaliacao->imovel->titulo . '" foi aprovada e já está visível no site.',
-                route('cliente.avaliacoes')
+                rtrim(config('app.frontend_url', ''), '/') . '/cliente/avaliacoes'
             );
         }
 
@@ -154,21 +154,21 @@ class ModeracaoController extends Controller
 
         // Notificar cliente in-app (C7)
         if ($avaliacao->cliente_id) {
-            $motivoTexto = $validated['motivo_rejeicao'] ? ': ' . $validated['motivo_rejeicao'] : '.';
+            $motivoTexto = ($validated['motivo_rejeicao'] ?? null) ? ': ' . $validated['motivo_rejeicao'] : '.';
 
             ClienteNotificacaoService::enviar(
                 $avaliacao->cliente_id,
                 'avaliacao',
                 'Avaliação rejeitada',
                 'A sua avaliação do imóvel "' . $avaliacao->imovel->titulo . '" foi rejeitada' . $motivoTexto . ' Pode corrigi-la e reenviá-la.',
-                route('cliente.avaliacoes')
+                rtrim(config('app.frontend_url', ''), '/') . '/cliente/avaliacoes'
             );
 
             \App\Services\PushNotificationService::enviar(
                 $avaliacao->cliente_id,
                 'Avaliação rejeitada',
                 'A sua avaliação do imóvel "' . $avaliacao->imovel->titulo . '" foi rejeitada' . $motivoTexto,
-                route('cliente.avaliacoes')
+                rtrim(config('app.frontend_url', ''), '/') . '/cliente/avaliacoes'
             );
         }
 

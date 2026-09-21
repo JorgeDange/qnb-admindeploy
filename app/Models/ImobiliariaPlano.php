@@ -55,8 +55,10 @@ class ImobiliariaPlano extends Model
 
     public function renovar(): void
     {
+        $base = $this->data_expiracao ?? now();
+
         $this->update([
-            'data_expiracao' => $this->data_expiracao->addDays($this->plano->dias_validade),
+            'data_expiracao' => $base->copy()->addDays($this->plano->dias_validade),
             'posts_usados' => 0,
         ]);
     }

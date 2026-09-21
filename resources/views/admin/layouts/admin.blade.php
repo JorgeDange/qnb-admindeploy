@@ -7,7 +7,7 @@
     <title>@yield('title', 'Admin — QNB-Imobiliária')</title>
 
     <link rel="stylesheet" href="{{ asset('assets/icon/flaticon_real_estate.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendor/animate-wow/animate.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">

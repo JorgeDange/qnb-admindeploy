@@ -17,7 +17,22 @@ use App\Http\Controllers\Admin\PedidoController as AdminPedidoController;
 use App\Http\Controllers\Admin\PlanoController as AdminPlanoController;
 use App\Http\Controllers\Admin\RelatorioController as AdminRelatorioController;
 use App\Http\Controllers\Admin\SubscricaoController as AdminSubscricaoController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
+// Raiz do CRM: identifica a sessão e leva o utilizador a uma rota válida
+Route::get('/', function () {
+    return Auth::guard('admin')->check()
+        ? redirect()->route('admin.dashboard')
+        : redirect()->route('admin.login');
+})->name('home');
+
+// Qualquer URL desconhecida (ex.: /admin/dashboard) → rota válida em vez de 404
+Route::fallback(function () {
+    return Auth::guard('admin')->check()
+        ? redirect()->route('admin.dashboard')
+        : redirect()->route('admin.login');
+});
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'login'])->name('login');

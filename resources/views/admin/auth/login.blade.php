@@ -29,10 +29,10 @@
         <!-- TOPBAR -->
         <div class="ul-painel-topbar">
             <div class="ul-painel-topbar-left">
-                <a href="{{ route('home') }}"><img src="{{ asset('assets/img/logo.svg') }}" alt="QNB-Imobiliária" class="logo"></a>
+                <a href="{{ config('app.frontend_url', '#') }}"><img src="{{ asset('assets/img/logo.svg') }}" alt="QNB-Imobiliária" class="logo"></a>
             </div>
             <div class="ul-painel-topbar-right">
-                <a href="{{ route('home') }}" class="ul-painel-ver-site">Ver site público</a>
+                <a href="{{ config('app.frontend_url', '#') }}" class="ul-painel-ver-site">Ver site público</a>
             </div>
         </div>
 
@@ -72,14 +72,14 @@
                     </div>
                 </form>
 
-                <p class="ul-auth-alternativa"><a href="{{ route('home') }}">Voltar ao site</a></p>
+                <p class="ul-auth-alternativa"><a href="{{ config('app.frontend_url', '#') }}">Voltar ao site</a></p>
             </div>
         </div>
 
         <!-- RODAPÉ SIMPLIFICADO -->
         <footer class="ul-painel-rodape">
             <span>© 2026 QNB-Imobiliária. Todos os direitos reservados.</span>
-            <span><a href="{{ route('home') }}">Voltar ao site</a></span>
+            <span><a href="{{ config('app.frontend_url', '#') }}">Voltar ao site</a></span>
         </footer>
     </div>
 

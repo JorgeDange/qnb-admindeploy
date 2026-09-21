@@ -1,0 +1,1560 @@
+/* ============================================================
+   QNB-Imobiliária — Painel do Cliente (Imobiliária)
+   painel.css — estilos exclusivos do painel, construídos SOBRE
+   as variáveis do design system público (assets/css/style.css).
+   Nenhuma cor nova: apenas var(--ul-*) e derivados já existentes.
+   ============================================================ */
+
+/* ---- 1. Estrutura geral do painel ---- */
+/* Neutraliza regras do template público (body fixed/overflow hidden) */
+body {
+  position: static;
+  overflow: visible;
+  margin: 0;
+  background-color: var(--white);
+}
+
+.ul-painel {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--white);
+}
+
+.ul-painel-corpo {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ---- 2. Topbar do painel ---- */
+.ul-painel-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+  padding: clamp(12px, 1.05vw, 20px) clamp(16px, 2.1vw, 40px);
+  background-color: var(--ul-secondary);
+  color: var(--white);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.ul-painel-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.05vw, 20px);
+}
+.ul-painel-topbar .logo {
+  height: clamp(36px, 3.4vw, 56px);
+  width: auto;
+}
+.ul-painel-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ul-painel-ver-site {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+  text-decoration: underline;
+  transition: 0.3s ease;
+}
+.ul-painel-ver-site:hover {
+  color: var(--white);
+}
+
+/* badge de estado (topo) */
+.ul-badge-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: clamp(11px, 0.68vw, 13px);
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  white-space: nowrap;
+}
+.ul-badge-estado--primaria {
+  background-color: var(--ul-primary);
+  border-color: var(--ul-primary);
+}
+.ul-badge-estado--cinza {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ---- 3. Sidebar lateral do painel ---- */
+.ul-painel-sidebar {
+  width: clamp(230px, 16vw, 270px);
+  flex-shrink: 0;
+  background-color: #F7F7FD;
+  border-right: 1px solid var(--ul-gray);
+  padding: clamp(18px, 1.31vw, 25px);
+  position: sticky;
+  top: 64px;
+  align-self: flex-start;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+@media (max-width: 991px) {
+  .ul-painel-sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--ul-gray);
+  }
+}
+
+.ul-painel-sidebar-perfil {
+  text-align: center;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--ul-gray);
+  margin-bottom: 16px;
+}
+.ul-painel-sidebar-perfil .ul-painel-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 10px;
+  border: 2px solid var(--ul-primary);
+  background-color: var(--white);
+}
+.ul-painel-sidebar-perfil .ul-painel-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ul-painel-sidebar-perfil .ul-painel-nome {
+  font-size: 15px;
+  color: var(--ul-secondary);
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.ul-painel-sidebar-perfil .ul-painel-email {
+  font-size: 12px;
+  color: var(--ul-gray2);
+  word-break: break-all;
+}
+
+.ul-painel-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+@media (max-width: 991px) {
+  .ul-painel-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+.ul-painel-nav li a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ul-gray2);
+  transition: 0.3s ease;
+}
+.ul-painel-nav li a i {
+  font-size: 16px;
+  color: var(--ul-secondary);
+  transition: 0.3s ease;
+}
+.ul-painel-nav li a:hover {
+  background-color: var(--white);
+  color: var(--ul-secondary);
+  box-shadow: 8px 10px 20px 1px rgba(0, 0, 0, 0.06);
+}
+.ul-painel-nav li.active a {
+  background-color: var(--ul-primary);
+  color: var(--white);
+}
+.ul-painel-nav li.active a i {
+  color: var(--white);
+}
+.ul-painel-nav li.ul-disabled a {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* ---- 4. Conteúdo ---- */
+.ul-painel-conteudo {
+  flex: 1;
+  min-width: 0;
+  padding: clamp(20px, 2.1vw, 40px);
+}
+.ul-painel-conteudo-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ---- 5. Cards / blocos ---- */
+.ul-painel-card {
+  background-color: var(--white);
+  border: 1px solid var(--ul-gray);
+  border-radius: 20px;
+  padding: clamp(20px, 1.58vw, 30px);
+  margin-bottom: 20px;
+  box-shadow: 8px 10px 20px 1px rgba(0, 0, 0, 0.04);
+}
+.ul-painel-card-titulo {
+  font-size: clamp(18px, 1.58vw, 24px);
+  color: var(--ul-secondary);
+  margin-bottom: 6px;
+}
+.ul-painel-card-subtitulo {
+  font-size: 13px;
+  color: var(--ul-gray2);
+  margin-bottom: 18px;
+}
+
+/* ---- 6. Avisos por estado ---- */
+.ul-painel-aviso {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-radius: 20px;
+  padding: clamp(18px, 1.58vw, 26px);
+  margin-bottom: 20px;
+}
+.ul-painel-aviso--cinza {
+  background-color: #F7F7FD;
+  border: 1px solid var(--ul-gray);
+  color: var(--ul-gray2);
+}
+.ul-painel-aviso--destaque {
+  background: var(--ul-gradient);
+  color: var(--white);
+}
+.ul-painel-aviso-icone {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  background-color: rgba(255, 255, 255, 0.18);
+}
+.ul-painel-aviso--cinza .ul-painel-aviso-icone {
+  background-color: var(--white);
+  color: var(--ul-primary);
+}
+.ul-painel-aviso-texto {
+  flex: 1;
+  min-width: 220px;
+}
+.ul-painel-aviso-titulo {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.ul-painel-aviso--destaque .ul-painel-aviso-titulo {
+  color: var(--white);
+}
+.ul-painel-aviso-texto p {
+  font-size: 13.5px;
+  opacity: 0.9;
+  margin: 0;
+}
+.ul-painel-aviso--cinza .ul-painel-aviso-titulo {
+  color: var(--ul-secondary);
+}
+
+/* ---- 7. Resumo do plano (perfil/imoveis) ---- */
+.ul-painel-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.ul-painel-stat {
+  background-color: var(--white);
+  border: 1px solid var(--ul-gray);
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+}
+.ul-painel-stat-numero {
+  display: block;
+  font-size: clamp(24px, 2.1vw, 34px);
+  font-weight: 700;
+  color: var(--ul-primary);
+  line-height: 1;
+}
+.ul-painel-stat-rotulo {
+  display: block;
+  font-size: 12.5px;
+  color: var(--ul-gray2);
+  margin-top: 8px;
+}
+
+/* ---- 8. Dados da empresa (perfil) ---- */
+.ul-painel-grid-dados {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+.ul-painel-dado {
+  background-color: #F7F7FD;
+  border: 1px solid var(--ul-gray);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.ul-painel-dado-rotulo {
+  display: block;
+  font-size: 11.5px;
+  color: var(--ul-gray2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.ul-painel-dado-valor {
+  font-weight: 600;
+  color: var(--ul-secondary);
+  font-size: 14px;
+}
+
+/* ---- 9. Lista de imóveis ---- */
+.ul-painel-imovel {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  background-color: var(--white);
+  border: 1px solid var(--ul-gray);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.ul-painel-imovel-foto {
+  width: 110px;
+  height: 82px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.ul-painel-imovel-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ul-painel-imovel-info {
+  flex: 1;
+  min-width: 220px;
+}
+.ul-painel-imovel-titulo {
+  font-size: 15.5px;
+  color: var(--ul-secondary);
+  margin-bottom: 4px;
+}
+.ul-painel-imovel-ref {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ul-primary);
+  background: rgba(233, 78, 25, 0.08);
+  border-radius: 20px;
+  padding: 1px 9px;
+  vertical-align: 2px;
+}
+.ul-painel-imovel-local {
+  display: block;
+  font-size: 12.5px;
+  color: var(--ul-gray2);
+  margin-bottom: 6px;
+}
+.ul-painel-imovel-preco {
+  display: inline-block;
+  font-weight: 700;
+  color: var(--ul-primary);
+  font-size: 14.5px;
+  margin-right: 10px;
+}
+.ul-painel-imovel-acoes {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* badges de estado do imóvel */
+.ul-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.ul-badge--aprovado {
+  background-color: rgba(0, 183, 85, 0.12);
+  color: #00B755;
+}
+.ul-badge--pendente {
+  background-color: rgba(255, 164, 27, 0.14);
+  color: #C67D00;
+}
+.ul-badge--rejeitado {
+  background-color: rgba(220, 53, 69, 0.12);
+  color: #dc3545;
+}
+.ul-badge--destaque {
+  background-color: rgba(255, 164, 27, 0.16);
+  color: #B26A00;
+}
+.ul-badge--destaque i {
+  font-size: 10px;
+  margin-right: 3px;
+}
+
+/* estatísticas por imóvel (lista) */
+.ul-painel-imovel-stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 12px;
+  vertical-align: middle;
+}
+.ul-painel-imovel-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--ul-gray2);
+}
+.ul-painel-imovel-stat i {
+  color: var(--ul-primary);
+  font-size: 13px;
+}
+
+/* ---- 10. Cabeçalho de página + botão novo imóvel ---- */
+.ul-painel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.ul-painel-aviso-limite {
+  font-size: 13px;
+  color: var(--ul-gray2);
+  background-color: #F7F7FD;
+  border: 1px dashed var(--ul-gray);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+.ul-btn:disabled,
+.ul-btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---- 11. Formulário (imoveis-form) ---- */
+.ul-painel-form label {
+  display: block;
+  font-weight: 600;
+  color: var(--ul-secondary);
+  margin-bottom: 8px;
+  font-size: 13.5px;
+}
+.ul-painel-form input,
+.ul-painel-form select,
+.ul-painel-form textarea {
+  width: 100%;
+  border: 1px solid #D9D9D9;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  background-color: var(--white);
+  color: var(--ul-black);
+}
+.ul-painel-form input:focus, .ul-painel-form select:focus, .ul-painel-form textarea:focus {
+  outline: none;
+  border-color: var(--ul-primary);
+}
+.ul-painel-form .form-group {
+  margin-bottom: 18px;
+}
+.ul-painel-form-seccao {
+  margin: 26px 0 18px;
+  padding-top: 20px;
+  border-top: 1px solid var(--ul-gray);
+}
+.ul-painel-form-seccao h3 {
+  font-size: 16px;
+  color: var(--ul-secondary);
+  margin-bottom: 14px;
+}
+.ul-painel-form-seccao h3:before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  border-radius: 2px;
+  background-color: var(--ul-primary);
+  margin-right: 10px;
+  vertical-align: -2px;
+}
+
+/* upload de fotos */
+.ul-upload-area {
+  border: 2px dashed #C9C9C9;
+  border-radius: 14px;
+  padding: 30px 20px;
+  text-align: center;
+  color: var(--ul-gray2);
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+.ul-upload-area:hover {
+  border-color: var(--ul-primary);
+}
+.ul-upload-area i {
+  font-size: 28px;
+  color: var(--ul-primary);
+  margin-bottom: 8px;
+}
+.ul-upload-area p {
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+.ul-upload-area span {
+  font-size: 12px;
+  opacity: 0.8;
+}
+.ul-fotos-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+}
+.ul-fotos-preview img {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--ul-gray);
+}
+
+/* amenidades */
+.ul-amenidades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px 18px;
+}
+.ul-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: var(--ul-gray2);
+}
+.ul-checkbox input {
+  width: auto;
+}
+
+/* ---- 12. Mensagens ---- */
+.ul-painel-mensagem {
+  background-color: var(--white);
+  border: 1px solid var(--ul-gray);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+.ul-painel-mensagem:hover {
+  border-color: var(--ul-primary);
+}
+.ul-painel-mensagem--naolida {
+  border-left: 3px solid var(--ul-primary);
+  background-color: #F7F7FD;
+}
+.ul-painel-mensagem-cab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.ul-painel-mensagem-nome {
+  font-size: 15px;
+  color: var(--ul-secondary);
+  margin: 0;
+}
+.ul-painel-mensagem-data {
+  font-size: 12px;
+  color: var(--ul-gray2);
+}
+.ul-painel-mensagem-texto {
+  font-size: 13.5px;
+  color: var(--ul-gray2);
+  margin-bottom: 10px;
+}
+.ul-painel-mensagem-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+}
+.ul-painel-mensagem-contacto {
+  color: var(--ul-primary);
+  font-weight: 600;
+}
+.ul-painel-mensagem-imovel {
+  color: var(--ul-gray2);
+  font-style: italic;
+}
+
+/* ---- 13. Vazio / mensagens auxiliares ---- */
+.ul-painel-vazio {
+  text-align: center;
+  color: var(--ul-gray2);
+  font-size: 14px;
+  padding: 30px 0;
+}
+
+/* ---- 14. Toast (feedback visual) ---- */
+.ul-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  background-color: var(--ul-secondary);
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 14px 22px;
+  border-radius: 12px;
+  box-shadow: 8px 10px 25px rgba(0, 0, 0, 0.18);
+  z-index: 1000;
+  transition: transform 0.4s ease;
+  max-width: 90vw;
+  text-align: center;
+}
+.ul-toast--visivel {
+  transform: translateX(-50%) translateY(0);
+}
+.ul-toast--erro {
+  background-color: #dc3545;
+}
+.ul-toast a {
+  color: var(--white);
+  text-decoration: underline;
+}
+
+/* ---- 15. Formulários de autenticação (login/registo) ---- */
+.ul-auth {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 3.15vw, 60px) 16px;
+  background-color: #F7F7FD;
+}
+.ul-auth-card {
+  background-color: var(--white);
+  border: 1px solid var(--ul-gray);
+  border-radius: 24px;
+  padding: clamp(24px, 2.63vw, 50px);
+  box-shadow: 8px 10px 20px 1px rgba(0, 0, 0, 0.06);
+  max-width: 560px;
+  width: 100%;
+}
+.ul-auth-logo {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.ul-auth-logo img {
+  height: clamp(56px, 5vw, 88px);
+  width: auto;
+}
+.ul-auth-titulo {
+  font-size: clamp(20px, 1.84vw, 28px);
+  color: var(--ul-secondary);
+  margin-bottom: 6px;
+  text-align: center;
+}
+.ul-auth-subtitulo {
+  font-size: 13.5px;
+  color: var(--ul-gray2);
+  text-align: center;
+  margin-bottom: 24px;
+}
+.ul-auth-erro {
+  display: none;
+  background-color: rgba(220, 53, 69, 0.08);
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.ul-auth-erro--visivel {
+  display: block;
+}
+.ul-auth-alternativa {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13.5px;
+  color: var(--ul-gray2);
+}
+.ul-auth-alternativa a {
+  color: var(--ul-primary);
+  font-weight: 600;
+}
+.ul-auth-voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ul-gray2);
+  font-size: 13.5px;
+  margin-bottom: 20px;
+  transition: 0.3s ease;
+}
+.ul-auth-voltar:hover {
+  color: var(--ul-primary);
+}
+
+/* ---- Toggle Imobiliária / Cliente ---- */
+.ul-auth-toggle {
+  display: flex;
+  background-color: #F0F0F8;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 20px;
+  gap: 4px;
+}
+.ul-auth-toggle-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ul-gray2);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.ul-auth-toggle-btn i {
+  font-size: 16px;
+}
+.ul-auth-toggle-btn--ativo {
+  background-color: var(--ul-primary);
+  color: var(--white);
+  box-shadow: 0 2px 8px rgba(26, 58, 92, 0.25);
+}
+.ul-auth-toggle-btn:not(.ul-auth-toggle-btn--ativo):hover {
+  color: var(--ul-primary);
+  background-color: rgba(26, 58, 92, 0.06);
+}
+
+/* ---- Termos checkbox ---- */
+.ul-auth-termos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ul-gray2);
+  cursor: pointer;
+  line-height: 1.4;
+}
+.ul-auth-termos input[type="checkbox"] {
+  margin-top: 0;
+  accent-color: var(--ul-primary);
+  width: 18px;
+  height: 18px;
+}
+.ul-auth-termos a {
+  color: var(--ul-primary);
+  font-weight: 600;
+}
+
+/* ---- 16. Contactos do plano (ativar-plano) ---- */
+.ul-painel-contactos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+.ul-painel-contacto {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background-color: #F7F7FD;
+  border: 1px solid var(--ul-gray);
+  border-radius: 14px;
+  padding: 16px;
+  transition: 0.3s ease;
+}
+.ul-painel-contacto:hover {
+  border-color: var(--ul-primary);
+  transform: translateY(-2px);
+}
+.ul-painel-contacto-icone {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background-color: var(--ul-primary);
+  color: var(--white);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.ul-painel-contacto-texto {
+  font-size: 12.5px;
+  color: var(--ul-gray2);
+  line-height: 1.4;
+}
+.ul-painel-contacto-texto strong {
+  color: var(--ul-secondary);
+  font-size: 14px;
+  display: block;
+}
+
+/* ---- 17. Controlo de demonstração ---- */
+.ul-demo-controlo {
+  margin-top: 30px;
+  border: 1px dashed var(--ul-gray);
+  border-radius: 16px;
+  padding: 16px 18px;
+  background-color: #F7F7FD;
+}
+.ul-demo-controlo h4 {
+  font-size: 13px;
+  color: var(--ul-gray2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.ul-demo-botoes {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ---- 18. Rodapé simplificado ---- */
+.ul-painel-rodape {
+  background-color: var(--black);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  padding: 20px clamp(16px, 2.1vw, 40px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ul-painel-rodape a {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: underline;
+}
+.ul-painel-rodape a:hover {
+  color: var(--white);
+}
+
+/* ---- 19. Responsividade ---- */
+@media (max-width: 767px) {
+  .ul-painel-conteudo {
+    padding: 16px;
+  }
+  .ul-painel-topbar-right .ul-badge-estado {
+    font-size: 10.5px;
+    padding: 5px 10px;
+  }
+  .ul-painel-imovel-foto {
+    width: 100%;
+    height: 160px;
+  }
+}
+
+/* ---- 20. Dashboard (visão geral) ---- */
+.ul-painel-dash-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 991px) {
+  .ul-painel-dash-cols {
+    grid-template-columns: 1fr;
+  }
+}
+.ul-ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--ul-gray);
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+.ul-ranking-item:last-child {
+  border-bottom: none;
+}
+.ul-ranking-item:hover {
+  padding-left: 6px;
+}
+.ul-ranking-pos {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: var(--ul-primary);
+  color: var(--white);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.ul-ranking-info {
+  flex: 1;
+  min-width: 0;
+}
+.ul-ranking-info strong {
+  display: block;
+  font-size: 14px;
+  color: var(--ul-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ul-ranking-info small {
+  font-size: 12px;
+  color: var(--ul-gray2);
+}
+.ul-ranking-metrica {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ul-primary);
+  white-space: nowrap;
+}
+.ul-ranking-metrica i {
+  margin-right: 4px;
+}
+.ul-msg-item {
+  display: block;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--ul-gray);
+  text-decoration: none;
+}
+.ul-msg-item:last-child {
+  border-bottom: none;
+}
+.ul-msg-item--naolida {
+  border-left: 3px solid var(--ul-primary);
+  padding-left: 12px;
+}
+.ul-msg-nome {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ul-secondary);
+}
+.ul-msg-texto {
+  display: block;
+  font-size: 13px;
+  color: var(--ul-gray2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ul-msg-imovel {
+  display: block;
+  font-size: 12px;
+  color: var(--ul-primary);
+  font-style: italic;
+}
+
+/* ---- 21. Sidebar: seccoes e badges ---- */
+.ul-painel-nav-seccao {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--ul-gray2);
+  padding: 18px 0 6px 0;
+  list-style: none;
+  text-transform: uppercase;
+}
+.ul-painel-nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background-color: var(--ul-primary);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  margin-left: auto;
+}
+
+/* ---- 22. Page headers (padrao unificado) ---- */
+.ul-painel-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.ul-painel-titulo {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ul-secondary);
+  margin: 0;
+}
+
+/* ---- 23. Botoes do painel ---- */
+.ul-painel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  line-height: 1.4;
+}
+.ul-painel-btn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+.ul-painel-btn--primario {
+  background-color: var(--ul-primary);
+  color: var(--white);
+}
+.ul-painel-btn--cinza {
+  background-color: var(--ul-gray);
+  color: var(--ul-secondary);
+}
+.ul-painel-btn--perigo {
+  background-color: #e74c3c;
+  color: var(--white);
+}
+.ul-painel-btn--aviso {
+  background-color: #f59e0b;
+  color: var(--white);
+}
+.ul-painel-btn--pequeno {
+  padding: 6px 14px;
+  font-size: 13px;
+}
+/* Variante utilitaria: destaque numerico/icone com cor semantica sem
+   estilos inline (o hover mantem a cor — o fundo destes botoes e transparente). */
+.ul-painel-btn--sucesso-texto:hover,
+.ul-painel-btn--aviso-texto:hover,
+.ul-painel-btn--perigo-texto:hover {
+  color: inherit;
+}
+.ul-painel-btn--sucesso-texto {
+  color: #10b981;
+}
+.ul-painel-btn--aviso-texto {
+  color: #f59e0b;
+}
+.ul-painel-btn--perigo-texto {
+  color: #e74c3c;
+}
+/* Cor explicita no hover: a regra global `a:hover` do style.css tem
+   especificidade superior as variantes e fazia o texto ficar da cor do
+   fundo (texto invisivel). */
+.ul-painel-btn--primario:hover,
+.ul-painel-btn--perigo:hover,
+.ul-painel-btn--sucesso:hover,
+.ul-painel-btn--aviso:hover {
+  color: var(--white);
+}
+.ul-painel-btn--cinza:hover {
+  color: var(--ul-secondary);
+}
+
+/* ---- 24. Tabelas do painel ---- */
+.ul-painel-tabela-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -20px;
+  padding: 0 20px;
+}
+.ul-painel-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.ul-painel-tabela thead th {
+  background-color: var(--ul-gray);
+  color: var(--ul-secondary);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 14px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 2px solid var(--ul-gray2);
+}
+.ul-painel-tabela tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--ul-gray);
+  vertical-align: middle;
+}
+.ul-painel-tabela tbody tr:hover {
+  background-color: #f8f9fa;
+}
+.ul-painel-tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---- 25. Listas de ranking (estatisticas) ---- */
+.ul-painel-lista-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--ul-gray);
+}
+.ul-painel-lista-item:last-child {
+  border-bottom: none;
+}
+.ul-painel-lista-info {
+  flex: 1;
+  min-width: 0;
+}
+.ul-painel-lista-info strong {
+  display: block;
+  font-size: 14px;
+  color: var(--ul-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ul-painel-lista-info small {
+  font-size: 12px;
+  color: var(--ul-gray2);
+}
+
+/* ---- 26. Upload de foto (perfil) ---- */
+.ul-painel-foto-upload {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: var(--ul-gray);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+.ul-painel-foto-preview {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--ul-primary);
+  flex-shrink: 0;
+}
+.ul-painel-foto-placeholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: var(--ul-gray2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ul-painel-foto-placeholder i {
+  font-size: 36px;
+  color: var(--white);
+}
+.ul-painel-foto-actions {
+  flex: 1;
+}
+.ul-painel-foto-info {
+  display: block;
+  font-size: 12px;
+  color: var(--ul-gray2);
+  margin-top: 6px;
+}
+
+/* ---- 27. Badges de estado (pagamentos, visitas) ---- */
+.ul-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.ul-badge--success,
+.ul-badge--sucesso,
+.ul-badge--aprovado {
+  background-color: #d4edda;
+  color: #155724;
+}
+.ul-badge--danger,
+.ul-badge--rejeitado {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+.ul-badge--info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+.ul-badge--aviso,
+.ul-badge--pendente {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+/* ---- 28. Responsive: tabelas, imovel, dashboard ---- */
+@media (max-width: 767px) {
+  .ul-painel-imovel {
+    flex-direction: column;
+  }
+  .ul-painel-imovel-info {
+    width: 100%;
+  }
+  .ul-painel-foto-upload {
+    flex-direction: column;
+    text-align: center;
+  }
+  .ul-painel-cabecalho {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .ul-painel-tabela-wrap {
+    margin: 0;
+    padding: 0;
+  }
+}
+@media (max-width: 991px) {
+  .ul-painel-dash-cols {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- 29. Canal-row (canais de contacto) ---- */
+.canal-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+.canal-row .form-group {
+  margin-bottom: 0;
+}
+.canal-row .form-group:first-child {
+  flex: 1;
+}
+.canal-row .form-group:nth-child(2) {
+  flex: 2;
+}
+
+/* ---- 30. Utilitarios ---- */
+.ul-mb-0 { margin-bottom: 0; }
+.ul-mb-4 { margin-bottom: 4px; }
+.ul-mb-10 { margin-bottom: 10px; }
+.ul-mb-20 { margin-bottom: 20px; }
+.ul-mt-25 { margin-top: 25px; }
+.ul-ml-10 { margin-left: 10px; }
+.ul-text-center { text-align: center; }
+
+/* Alertas de estado (dashboard) */
+.ul-painel-aviso--perigo {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+.ul-painel-aviso--perigo .ul-painel-aviso-titulo,
+.ul-painel-aviso--perigo p {
+  color: #721c24;
+}
+.ul-painel-aviso--perigo a {
+  color: #721c24;
+  font-weight: bold;
+}
+.ul-painel-aviso--aviso {
+  background-color: #fff3cd;
+  border-color: #ffc107;
+}
+.ul-painel-aviso--aviso .ul-painel-aviso-titulo,
+.ul-painel-aviso--aviso p {
+  color: #856404;
+}
+.ul-painel-aviso--aviso a {
+  color: #856404;
+  font-weight: bold;
+}
+
+/* Numeros de estatistica com cor semantica (sem inline styles) */
+.ul-painel-stat-numero--sucesso {
+  color: #10b981;
+}
+.ul-painel-stat-numero--perigo {
+  color: #ef4444;
+}
+
+/* Texto de ajuda/apoio em formulario e tabelas (antes color:#888 inline) */
+.ul-painel-texto-apoio {
+  color: #888;
+}
+
+/* Textos semânticos de apoio (antes <small style="color:#..."> inline) */
+.ul-painel-texto-sucesso {
+  color: #10b981;
+}
+.ul-painel-texto-perigo {
+  color: #ef4444;
+}
+
+/* Ponto de estado "lido" das notificacoes (antes span com background inline) */
+.ul-ponto-sucesso {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981;
+}
+
+/* Linha de notificacao nao lida (antes background inline na <tr>) */
+.ul-linha-nao-lida {
+  background-color: #f0fdf4;
+}
+
+/* Badge "Destaque" dos planos (antes background inline) */
+.ul-badge--destaque {
+  background-color: #f59e0b;
+  color: var(--white);
+  margin-left: 6px;
+}
+
+/* Bloco de acao principal do detalhe de pagamento (antes inline) */
+.ul-painel-btn--sucesso-bloco {
+  width: 100%;
+  margin-bottom: 10px;
+  background-color: #10b981;
+  color: var(--white);
+}
+.ul-painel-btn--sucesso-bloco:hover {
+  color: var(--white);
+}
+
+/* ---- 35. Alias de botao (admin) ---- */
+
+/* Erro de formulario */
+.ul-form-erro {
+  color: #dc3545;
+  font-size: 13px;
+}
+
+/* Foto placeholder */
+.ul-painel-imovel-foto-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #f1f5f9;
+  display: grid;
+  place-items: center;
+  color: #aaa;
+  font-size: 36px;
+}
+
+/* Badge destaque */
+.ul-badge--destaque {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* Empty state padronizado */
+.ul-painel-vazio {
+  padding: 40px 20px;
+  text-align: center;
+  color: #888;
+}
+
+/* Accoes de mensagem */
+.ul-painel-mensagem-acoes {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+/* ---- 31. Formularios admin (ul-painel-form-*) ---- */
+.ul-painel-form-campo {
+  margin-bottom: 18px;
+}
+.ul-painel-form-label {
+  display: block;
+  font-weight: 600;
+  color: var(--ul-secondary);
+  font-size: 13.5px;
+  margin-bottom: 8px;
+}
+.ul-painel-form-input {
+  width: 100%;
+  border: 1px solid #D9D9D9;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: inherit;
+  background-color: var(--white);
+  color: var(--ul-black);
+}
+.ul-painel-form-input:focus {
+  outline: none;
+  border-color: var(--ul-primary);
+}
+.ul-painel-form-erro {
+  display: block;
+  color: #dc3545;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* ---- 32. Badges em falta ---- */
+.ul-badge--cinza {
+  background-color: var(--ul-gray);
+  color: var(--ul-secondary);
+}
+.ul-badge--perigo {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* ---- 33. Lista de pedidos ---- */
+.ul-painel-lista {
+  display: block;
+}
+.ul-painel-imovel-dados h4 {
+  font-size: 15px;
+  color: var(--ul-secondary);
+  margin: 0 0 4px;
+}
+.ul-painel-imovel-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* ---- 34. Alerta de sucesso ---- */
+.ul-painel-aviso--sucesso {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+}
+.ul-painel-aviso--sucesso .ul-painel-aviso-titulo,
+.ul-painel-aviso--sucesso .ul-painel-aviso-texto p {
+  color: #155724;
+}
+.ul-painel-aviso--sucesso .ul-painel-aviso-icone {
+  background-color: var(--white);
+  color: #155724;
+}
+
+/* ---- 35. Alias de botao (admin) ---- */
+.ul-btn--primary {
+  background-color: var(--ul-primary);
+  border-color: var(--ul-primary);
+  color: var(--white);
+}
+.ul-btn--primary:hover {
+  color: var(--white);
+}
+
+/* Variantes semanticas do .ul-btn (antes inline styles nos botoes de acao) */
+.ul-btn--sucesso {
+  background-color: #10b981;
+  color: var(--white);
+}
+.ul-btn--sucesso:hover {
+  color: var(--white);
+}
+.ul-btn--aviso {
+  background-color: #f59e0b;
+  color: #856404;
+}
+.ul-btn--aviso:hover {
+  color: #856404;
+}
+.ul-btn--perigo {
+  background-color: #dc3545;
+  color: var(--white);
+}
+.ul-btn--perigo:hover {
+  color: var(--white);
+}
+
+/* ---- 36. Variantes de badge do sidebar ---- */
+/* Semantica:
+   - .ul-painel-nav-badge        -> atencao (laranja, itens pendentes)
+   - --info                       -> contagem informativa (neutro)
+   - --aviso                      -> aviso (ambar)
+   - --perigo                     -> critico (vermelho) */
+.ul-painel-nav-badge--info {
+  background-color: var(--ul-gray);
+  color: var(--ul-secondary);
+}
+.ul-painel-nav-badge--aviso {
+  background-color: #f59e0b;
+  color: var(--white);
+}
+.ul-painel-nav-badge--perigo {
+  background-color: #e74c3c;
+  color: var(--white);
+}
+
+/* ---- 37. Icones dos alertas de flash ---- */
+.ul-painel-aviso--perigo .ul-painel-aviso-icone {
+  background-color: var(--white);
+  color: #dc3545;
+}
+.ul-painel-aviso--aviso .ul-painel-aviso-icone {
+  background-color: var(--white);
+  color: #f59e0b;
+}
+/* ---- 38. Graficos Chart.js ---- */
+/* O canvas do Chart.js gere a propria altura via maintainAspectRatio:false;
+   o contentor fixa a altura do bloco do grafico. */
+.ul_chart_height {
+  position: relative;
+  height: 260px;
+}
+@media (max-width: 768px) {
+  .ul_chart_height {
+    height: 220px;
+  }
+}

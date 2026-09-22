@@ -45,7 +45,7 @@ class FaturaEmitidaMail extends Mailable
         }
 
         return [
-            Attachment::from($caminho)
+            Attachment::fromPath($caminho)
                 ->as('Fatura-' . str_replace('/', '-', $this->fatura->numero) . '.pdf')
                 ->withMime('application/pdf'),
         ];

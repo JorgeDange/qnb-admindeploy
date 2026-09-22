@@ -41,7 +41,7 @@
             <!-- SIDEBAR -->
             <aside class="ul-painel-sidebar">
                 <div class="ul-painel-sidebar-perfil">
-                    <div class="ul-painel-avatar"><img src="{{ asset('assets/img/team-1.jpg') }}" alt="Admin"></div>
+                    <div class="ul-painel-avatar"><img src="{{ asset('assets/img/logo-c.svg') }}" alt="Admin"></div>
                     <h3 class="ul-painel-nome">{{ Auth::guard('admin')->user()->nome ?? 'Admin' }}</h3>
                     <span class="ul-painel-email">{{ Auth::guard('admin')->user()->email ?? 'admin@qnbangola.com' }}</span>
                 </div>

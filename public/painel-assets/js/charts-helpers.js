@@ -15,6 +15,21 @@
     Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
     Chart.defaults.color = texto;
 
+    /** Aceita canvas, div wrapper com <canvas> filha, ou id string. */
+    function resolveCanvas(el) {
+        if (!el) return null;
+        if (typeof el === 'string') {
+            el = document.getElementById(el);
+            if (!el) return null;
+        }
+        if (el.tagName && el.tagName.toUpperCase() === 'CANVAS') return el;
+        if (el.querySelector) {
+            var child = el.querySelector('canvas');
+            if (child) return child;
+        }
+        return null;
+    }
+
     window.QNBCharts = {
         palette: [success, warning, danger, purple, primary, info, secondary],
         colors: {
@@ -30,8 +45,9 @@
         },
 
         makeDonut: function (el, items) {
-            if (!el || !items || !items.length) return;
-            return new Chart(el, {
+            var canvas = resolveCanvas(el);
+            if (!canvas || !items || !items.length) return;
+            return new Chart(canvas, {
                 type: 'doughnut',
                 data: {
                     labels: items.map(function (d) { return d.label; }),
@@ -51,8 +67,9 @@
         },
 
         makeBar: function (el, items, horizontal) {
-            if (!el || !items || !items.length) return;
-            return new Chart(el, {
+            var canvas = resolveCanvas(el);
+            if (!canvas || !items || !items.length) return;
+            return new Chart(canvas, {
                 type: 'bar',
                 data: {
                     labels: items.map(function (d) { return d.label; }),
@@ -78,10 +95,11 @@
         },
 
         makeArea: function (el, items, label, color, rgba) {
-            if (!el || !items || !items.length) return;
+            var canvas = resolveCanvas(el);
+            if (!canvas || !items || !items.length) return;
             color = color || purple;
             rgba = rgba || 'rgba(139, 92, 246, 0.1)';
-            return new Chart(el, {
+            return new Chart(canvas, {
                 type: 'line',
                 data: {
                     labels: items.map(function (d) { return d.label; }),

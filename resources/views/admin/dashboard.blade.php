@@ -118,7 +118,6 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('assets/vendor/chart.umd.min.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var primary = '#e94e19';

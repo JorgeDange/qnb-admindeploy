@@ -211,13 +211,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 });
 
-// Health Check (público)
+// Health Check (público) — diagnóstico de PHP/sessão sem expor segredos
 Route::get('/health', function () {
     $checks = [
         'database' => fn () => \Illuminate\Support\Facades\DB::connection()->getPdo() ? 'ok' : 'erro',
         'cache' => fn () => \Illuminate\Support\Facades\Cache::store('file')->put('health', 1) ? 'ok' : 'erro',
         'queue' => fn () => class_exists(\Illuminate\Queue\QueueManager::class) ? 'ok' : 'erro',
         'storage' => fn () => is_writable(storage_path()) ? 'ok' : 'erro',
+        'sessions_dir' => fn () => is_writable(storage_path('framework/sessions')) ? 'ok' : 'erro',
+        'sessions_table' => function () {
+            try {
+                return \Illuminate\Support\Facades\Schema::hasTable(config('session.table')) ? 'ok' : 'em falta';
+            } catch (\Throwable) {
+                return 'erro';
+            }
+        },
+        'php_ok' => version_compare(PHP_VERSION, '8.2.0', '>=') ? 'ok' : ('ANTIGO ' . PHP_VERSION),
     ];
 
     $result = [];
@@ -225,6 +234,9 @@ Route::get('/health', function () {
     foreach ($checks as $name => $check) {
         try {
             $result[$name] = $check();
+            if ($result[$name] !== 'ok') {
+                $allOk = false;
+            }
         } catch (\Throwable $e) {
             $result[$name] = 'erro: ' . $e->getMessage();
             $allOk = false;
@@ -233,6 +245,14 @@ Route::get('/health', function () {
 
     return response()->json([
         'status' => $allOk ? 'healthy' : 'degraded',
+        'php' => PHP_VERSION,
+        'session' => [
+            'driver' => config('session.driver'),
+            'domain' => config('session.domain'),
+            'secure' => config('session.secure'),
+            'encrypt' => config('session.encrypt'),
+        ],
+        'app_url' => config('app.url'),
         'checks' => $result,
         'timestamp' => now()->toIso8601String(),
     ], $allOk ? 200 : 503);

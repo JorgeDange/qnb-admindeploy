@@ -22,3 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Docs locais — não commitar
+*.md
+!README.md

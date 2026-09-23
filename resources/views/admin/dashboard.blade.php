@@ -72,6 +72,11 @@
     </div>
 </div>
 
+<div class="ul-painel-card" style="margin-bottom:20px;">
+    <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Imobiliárias por Mês</h3>
+    <div id="chartImobiliariasMes" class="ul_chart_height"><canvas></canvas></div>
+</div>
+
 <!-- Listas recentes -->
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
     <!-- Imobiliárias recentes -->
@@ -120,6 +125,8 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    if (typeof Chart === 'undefined') return;
+
     var primary = '#e94e19';
     var secondary = '#064471';
     var success = '#10b981';
@@ -133,21 +140,33 @@ document.addEventListener('DOMContentLoaded', function() {
     Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
     Chart.defaults.color = texto;
 
-    // Imóveis por Estado (Donut)
-    var imoveisEstadoData = @json(
-        collect($chartData['imoveis_por_estado'])->map(function($total, $estado) {
-            return ['label' => ucfirst($estado), 'value' => $total];
-        })->values()->toArray()
+    var palette = [success, warning, danger, purple, primary, info, secondary];
+
+    var imoveisEstado = @json(
+        collect($chartData['imoveis_por_estado'])->map(fn($total, $estado) => ['label' => ucfirst($estado), 'value' => (int) $total])->values()
+    );
+    var imobiliariasEstado = @json(
+        collect($chartData['imobiliarias_por_estado'])->map(fn($total, $estado) => ['label' => ucfirst($estado), 'value' => (int) $total])->values()
+    );
+    var imoveisProvincia = @json(
+        collect($chartData['imoveis_por_provincia'])->map(fn($total, $provincia) => ['label' => $provincia, 'value' => (int) $total])->values()
+    );
+    var mensagensMes = @json(
+        collect($chartData['mensagens_por_mes'])->map(fn($total, $mes) => ['label' => $mes, 'value' => (int) $total])->values()
+    );
+    var imobiliariasMes = @json(
+        collect($chartData['imobiliarias_por_mes'])->map(fn($total, $mes) => ['label' => $mes, 'value' => (int) $total])->values()
     );
 
-    if (imoveisEstadoData.length > 0) {
-        new Chart(document.getElementById('chartImoveisEstado'), {
+    function makeDonut(el, items) {
+        if (!items.length) return;
+        new Chart(el, {
             type: 'doughnut',
             data: {
-                labels: imoveisEstadoData.map(function(d) { return d.label; }),
+                labels: items.map(d => d.label),
                 datasets: [{
-                    data: imoveisEstadoData.map(function(d) { return d.value; }),
-                    backgroundColor: [success, warning, danger, purple, primary, info, secondary],
+                    data: items.map(d => d.value),
+                    backgroundColor: palette,
                     borderWidth: 2,
                     borderColor: '#ffffff'
                 }]
@@ -160,48 +179,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Imobiliárias por Estado (Donut)
-    var imobEstadoData = @json(
-        collect($chartData['imobiliarias_por_estado'])->map(function($total, $estado) {
-            return ['label' => ucfirst($estado), 'value' => $total];
-        })->values()->toArray()
-    );
-
-    if (imobEstadoData.length > 0) {
-        new Chart(document.getElementById('chartImobiliariasEstado'), {
-            type: 'doughnut',
-            data: {
-                labels: imobEstadoData.map(function(d) { return d.label; }),
-                datasets: [{
-                    data: imobEstadoData.map(function(d) { return d.value; }),
-                    backgroundColor: [success, warning, danger, purple, primary, info, secondary],
-                    borderWidth: 2,
-                    borderColor: '#ffffff'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom' } }
-            }
-        });
-    }
-
-    // Imóveis por Província (Barra)
-    var imoveisProvData = @json(
-        collect($chartData['imoveis_por_provincia'])->map(function($total, $provincia) {
-            return ['y' => $provincia, 'a' => $total];
-        })->values()->toArray()
-    );
-
-    if (imoveisProvData.length > 0) {
-        new Chart(document.getElementById('chartImoveisProvincia'), {
+    function makeBar(el, items) {
+        if (!items.length) return;
+        new Chart(el, {
             type: 'bar',
             data: {
-                labels: imoveisProvData.map(function(d) { return d.y; }),
+                labels: items.map(d => d.label),
                 datasets: [{
-                    label: 'Imóveis',
-                    data: imoveisProvData.map(function(d) { return d.a; }),
+                    label: 'Total',
+                    data: items.map(d => d.value),
                     backgroundColor: primary,
                     borderRadius: 6,
                     maxBarThickness: 40
@@ -219,26 +205,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Mensagens por Mês (Linha)
-    var msgsData = @json(
-        collect($chartData['mensagens_por_mes'])->map(function($total, $mes) {
-            return ['y' => $mes, 'item1' => $total];
-        })->values()->toArray()
-    );
-
-    if (msgsData.length > 0) {
-        new Chart(document.getElementById('chartMensagensMes'), {
+    function makeArea(el, items, label, color, rgba) {
+        if (!items.length) return;
+        new Chart(el, {
             type: 'line',
             data: {
-                labels: msgsData.map(function(d) { return d.y; }),
+                labels: items.map(d => d.label),
                 datasets: [{
-                    label: 'Mensagens',
-                    data: msgsData.map(function(d) { return d.item1; }),
-                    borderColor: purple,
-                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    label: label,
+                    data: items.map(d => d.value),
+                    borderColor: color,
+                    backgroundColor: rgba,
                     borderWidth: 2,
                     pointRadius: 3,
-                    pointBackgroundColor: purple,
+                    pointBackgroundColor: color,
                     fill: true,
                     tension: 0.3
                 }]
@@ -254,6 +234,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    makeDonut(document.getElementById('chartImoveisEstado'), imoveisEstado);
+    makeDonut(document.getElementById('chartImobiliariasEstado'), imobiliariasEstado);
+    makeBar(document.getElementById('chartImoveisProvincia'), imoveisProvincia);
+    makeArea(document.getElementById('chartMensagensMes'), mensagensMes, 'Mensagens', purple, 'rgba(139, 92, 246, 0.1)');
+    makeBar(document.getElementById('chartImobiliariasMes'), imobiliariasMes);
 });
 </script>
 @endpush

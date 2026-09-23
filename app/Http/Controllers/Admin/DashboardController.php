@@ -41,6 +41,7 @@ class DashboardController extends Controller
         $chartData = [
             'imoveis_por_estado' => Imovel::select('estado', DB::raw('count(*) as total'))->groupBy('estado')->pluck('total', 'estado'),
             'imobiliarias_por_estado' => Imobiliaria::select('estado', DB::raw('count(*) as total'))->groupBy('estado')->pluck('total', 'estado'),
+            'pedidos_por_estado' => PedidoAtivacao::select('estado', DB::raw('count(*) as total'))->groupBy('estado')->pluck('total', 'estado'),
             'imoveis_por_provincia' => Imovel::select('provincia', DB::raw('count(*) as total'))->groupBy('provincia')->orderBy('total', 'desc')->take(8)->pluck('total', 'provincia'),
             'mensagens_por_mes' => $this->mensagensPorMes(),
             'imobiliarias_por_mes' => $this->imobiliariasPorMes(),

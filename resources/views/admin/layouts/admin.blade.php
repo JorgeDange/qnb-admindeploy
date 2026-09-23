@@ -187,6 +187,7 @@
     <script src="{{ asset('assets/vendor/animate-wow/wow.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/chart.umd.min.js') }}"></script>
+    <script src="{{ asset('painel-assets/js/charts-helpers.js') }}"></script>
     <!-- Outros scripts da página entram pela stack 'scripts' -->
     <script src="{{ asset('painel-assets/js/painel-loader.js') }}"></script>
     <script src="{{ asset('painel-assets/js/painel.js') }}"></script>

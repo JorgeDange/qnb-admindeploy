@@ -93,22 +93,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    if (typeof Chart === 'undefined') return;
-
-    var primary = '#e94e19';
-    var secondary = '#064471';
-    var success = '#10b981';
-    var warning = '#f59e0b';
-    var danger = '#ef4444';
-    var purple = '#8b5cf6';
-    var info = '#06b6d4';
-    var grid = '#f1f5f9';
-    var texto = '#64748b';
-
-    Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
-    Chart.defaults.color = texto;
-
-    var palette = [success, warning, danger, purple, primary, info, secondary];
+    if (typeof Chart === 'undefined' || typeof QNBCharts === 'undefined') return;
 
     var imoveisEstado = @json(
         collect($estatisticas['imoveis_por_estado'] ?? [])->map(fn($i) => ['label' => ucfirst($i->estado), 'value' => (int) $i->total])->values()
@@ -126,89 +111,11 @@ document.addEventListener('DOMContentLoaded', function() {
         collect($estatisticas['mensagens_por_mes'] ?? [])->map(fn($i) => ['label' => $i->mes, 'value' => (int) $i->total])->values()
     );
 
-    function makeDonut(el, items) {
-        if (!items.length) return;
-        new Chart(el, {
-            type: 'doughnut',
-            data: {
-                labels: items.map(d => d.label),
-                datasets: [{
-                    data: items.map(d => d.value),
-                    backgroundColor: palette,
-                    borderWidth: 2,
-                    borderColor: '#ffffff'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom' } }
-            }
-        });
-    }
-
-    function makeBar(el, items, horizontal) {
-        if (!items.length) return;
-        new Chart(el, {
-            type: 'bar',
-            data: {
-                labels: items.map(d => d.label),
-                datasets: [{
-                    label: 'Total',
-                    data: items.map(d => d.value),
-                    backgroundColor: horizontal ? palette : primary,
-                    borderRadius: 6,
-                    maxBarThickness: 40
-                }]
-            },
-            options: {
-                indexAxis: horizontal ? 'y' : 'x',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { display: horizontal }, beginAtZero: true },
-                    y: { grid: { color: horizontal ? 'transparent' : grid }, beginAtZero: true }
-                }
-            }
-        });
-    }
-
-    function makeArea(el, items) {
-        if (!items.length) return;
-        new Chart(el, {
-            type: 'line',
-            data: {
-                labels: items.map(d => d.label),
-                datasets: [{
-                    label: 'Mensagens',
-                    data: items.map(d => d.value),
-                    borderColor: purple,
-                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                    borderWidth: 2,
-                    pointRadius: 3,
-                    pointBackgroundColor: purple,
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { display: false } },
-                    y: { grid: { color: grid }, beginAtZero: true }
-                }
-            }
-        });
-    }
-
-    makeDonut(document.getElementById('chartImoveisEstado'), imoveisEstado);
-    makeDonut(document.getElementById('chartImobiliariasEstado'), imobiliariasEstado);
-    makeBar(document.getElementById('chartImoveisTipo'), imoveisTipo, false);
-    makeBar(document.getElementById('chartImoveisProvincia'), imoveisProvincia, true);
-    makeArea(document.getElementById('chartMensagensMes'), mensagensMes);
+    QNBCharts.makeDonut(document.getElementById('chartImoveisEstado'), imoveisEstado);
+    QNBCharts.makeDonut(document.getElementById('chartImobiliariasEstado'), imobiliariasEstado);
+    QNBCharts.makeBar(document.getElementById('chartImoveisTipo'), imoveisTipo, false);
+    QNBCharts.makeBar(document.getElementById('chartImoveisProvincia'), imoveisProvincia, true);
+    QNBCharts.makeArea(document.getElementById('chartMensagensMes'), mensagensMes, 'Mensagens');
 });
 </script>
 @endpush

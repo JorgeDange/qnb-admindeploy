@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Imobiliaria;
 use App\Models\Imovel;
 use App\Models\Mensagem;
+use App\Models\Pagamento;
 use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,12 @@ class RelatorioController extends Controller
             'imoveis_por_provincia' => Imovel::select('provincia', DB::raw('count(*) as total'))->groupBy('provincia')->orderBy('total', 'desc')->take(10)->get(),
             'imobiliarias_por_estado' => Imobiliaria::select('estado', DB::raw('count(*) as total'))->groupBy('estado')->get(),
             'mensagens_por_mes' => $this->mensagensPorMes(),
+            // Séries mensais (estilo Duralux: Project Report + Payment Records)
+            'imoveis_por_mes' => $this->registrosPorMes(Imovel::class),
+            'imobiliarias_por_mes' => $this->registrosPorMes(Imobiliaria::class),
+            'pagamentos_confirmados_mes' => $this->pagamentosMesPorEstado('confirmado'),
+            'pagamentos_pendentes_mes' => $this->pagamentosMesPorEstado('pendente'),
+            'pagamentos_rejeitados_mes' => $this->pagamentosMesPorEstado('rejeitado'),
         ];
 
         return view('admin.relatorios.index', compact('estatisticas'));
@@ -125,5 +132,50 @@ class RelatorioController extends Controller
 
         // O view itera objetos com ->mes e ->total; devolve coleção de objetos
         return collect($meses)->map(fn ($total, $mes) => (object) ['mes' => $mes, 'total' => $total])->values();
+    }
+
+    /** Contagem mensal de um model (últimos 12 meses, incl. vazios). */
+    private function registrosPorMes(string $model): array
+    {
+        $meses = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $meses[now()->subMonths($i)->format('Y-m')] = 0;
+        }
+        $inicio = now()->subMonths(11)->startOfMonth();
+
+        $model::where('created_at', '>=', $inicio)
+            ->select('created_at')
+            ->get()
+            ->each(function ($r) use (&$meses) {
+                $chave = $r->created_at->format('Y-m');
+                if (isset($meses[$chave])) {
+                    $meses[$chave]++;
+                }
+            });
+
+        return $meses;
+    }
+
+    /** Contagem mensal de pagamentos num estado específico (p/ combo Payment Records). */
+    private function pagamentosMesPorEstado(string $estado): array
+    {
+        $meses = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $meses[now()->subMonths($i)->format('Y-m')] = 0;
+        }
+        $inicio = now()->subMonths(11)->startOfMonth();
+
+        Pagamento::where('estado', $estado)
+            ->where('created_at', '>=', $inicio)
+            ->select('created_at')
+            ->get()
+            ->each(function ($r) use (&$meses) {
+                $chave = $r->created_at->format('Y-m');
+                if (isset($meses[$chave])) {
+                    $meses[$chave]++;
+                }
+            });
+
+        return $meses;
     }
 }

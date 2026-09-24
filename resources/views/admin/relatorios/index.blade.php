@@ -31,9 +31,22 @@
     </div>
 </div>
 
+<!-- Project Report — evolução multi-série (Duralux) -->
+<div style="display:grid;grid-template-columns:2fr 1fr;grid-auto-flow:dense;gap:20px;margin-bottom:20px;">
+    <div class="ul-painel-card">
+        <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Evolução Mensal — Imóveis, Imobiliárias e Mensagens</h3>
+        <div id="chartEvolucao" class="ul_chart_height"><canvas></canvas></div>
+    </div>
+    <div class="ul-painel-card">
+        <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Mensagens por Mês</h3>
+        <div id="chartMensagensMes" class="ul_chart_height"><canvas></canvas></div>
+    </div>
+</div>
+
+<!-- Payment Records — combo bar+line (Duralux) -->
 <div class="ul-painel-card" style="margin-bottom:20px;">
-    <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Mensagens por Mês</h3>
-    <div id="chartMensagensMes" class="ul_chart_height"><canvas></canvas></div>
+    <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Pagamentos por Mês — Confirmados vs Pendentes/Rejeitados</h3>
+    <div id="chartPagamentosMes" class="ul_chart_height"><canvas></canvas></div>
 </div>
 
 <!-- Detalhe tabular -->
@@ -110,12 +123,32 @@ document.addEventListener('DOMContentLoaded', function() {
     var mensagensMes = @json(
         collect($estatisticas['mensagens_por_mes'] ?? [])->map(fn($i) => ['label' => $i->mes, 'value' => (int) $i->total])->values()
     );
+    var meses = @json(collect($estatisticas['imoveis_por_mes'] ?? [])->keys());
+    var labelsMes = meses.map(function(m) { return QNBCharts.labelMes(m); });
+    var imoveisMesArr = @json(collect($estatisticas['imoveis_por_mes'] ?? [])->values()->map(fn($v) => (int) $v));
+    var imobiliariasMesArr = @json(collect($estatisticas['imobiliarias_por_mes'] ?? [])->values()->map(fn($v) => (int) $v));
+    var pagConfirmadosMes = @json(collect($estatisticas['pagamentos_confirmados_mes'] ?? [])->values()->map(fn($v) => (int) $v));
+    var pagPendentesMes = @json(collect($estatisticas['pagamentos_pendentes_mes'] ?? [])->values()->map(fn($v) => (int) $v));
+    var pagRejeitadosMes = @json(collect($estatisticas['pagamentos_rejeitados_mes'] ?? [])->values()->map(fn($v) => (int) $v));
 
     QNBCharts.makeDonut(document.getElementById('chartImoveisEstado'), imoveisEstado);
     QNBCharts.makeDonut(document.getElementById('chartImobiliariasEstado'), imobiliariasEstado);
     QNBCharts.makeBar(document.getElementById('chartImoveisTipo'), imoveisTipo, false);
     QNBCharts.makeBar(document.getElementById('chartImoveisProvincia'), imoveisProvincia, true);
     QNBCharts.makeArea(document.getElementById('chartMensagensMes'), mensagensMes, 'Mensagens');
+
+    // Project Report — evolução multi-série (Duralux)
+    QNBCharts.makeMultiArea(document.getElementById('chartEvolucao'), labelsMes, [
+        { name: 'Imóveis', data: imoveisMesArr },
+        { name: 'Imobiliárias', data: imobiliariasMesArr },
+        { name: 'Mensagens', data: mensagensMes.map(function(d) { return d.value; }) }
+    ]);
+
+    // Payment Records — combo bar+line (Duralux)
+    QNBCharts.makeCombo(document.getElementById('chartPagamentosMes'), labelsMes, [
+        { name: 'Pendentes', data: pagPendentesMes, color: '#f59e0b' },
+        { name: 'Rejeitados', data: pagRejeitadosMes, color: '#e2e8f0' }
+    ], { name: 'Confirmados', data: pagConfirmadosMes, color: '#10b981' });
 });
 </script>
 @endpush

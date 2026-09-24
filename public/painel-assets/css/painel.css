@@ -1558,3 +1558,8 @@ body {
     height: 220px;
   }
 }
+/* Sparkline dos KPIs (mini card Duralux) */
+.ul_chart_spark {
+  height: 46px;
+  margin-top: 8px;
+}

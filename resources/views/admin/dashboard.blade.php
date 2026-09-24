@@ -21,6 +21,7 @@
         @if($stats['imobiliarias_novas'] > 0)
             <small class="ul-painel-texto-sucesso">+{{ $stats['imobiliarias_novas'] }} novas</small>
         @endif
+        <div id="spImobiliarias" class="ul_chart_height ul_chart_spark"><canvas></canvas></div>
     </div>
     <div class="ul-painel-stat">
         <span class="ul-painel-stat-numero">{{ $stats['total_imoveis'] }}</span>
@@ -28,40 +29,44 @@
         @if($stats['imoveis_novos'] > 0)
             <small class="ul-painel-texto-sucesso">+{{ $stats['imoveis_novos'] }} novos</small>
         @endif
+        <div id="spImoveis" class="ul_chart_height ul_chart_spark"><canvas></canvas></div>
     </div>
     <a href="{{ route('admin.imobiliarias', ['estado' => 'pendente']) }}" class="text-decoration-none">
         <div class="ul-painel-stat" {{ $stats['imobiliarias_pendentes'] > 0 ? 'style="border-left:4px solid #f59e0b;"' : '' }}>
             <span class="ul-painel-stat-numero">{{ $stats['imobiliarias_pendentes'] }}</span>
             <span class="ul-painel-stat-rotulo">Pendentes</span>
+            <div id="spImpPend" class="ul_chart_height ul_chart_spark"><canvas></canvas></div>
         </div>
     </a>
     <a href="{{ route('admin.imoveis', ['estado' => 'pendente']) }}" class="text-decoration-none">
         <div class="ul-painel-stat" {{ $stats['imoveis_pendentes'] > 0 ? 'style="border-left:4px solid #f59e0b;"' : '' }}>
             <span class="ul-painel-stat-numero">{{ $stats['imoveis_pendentes'] }}</span>
             <span class="ul-painel-stat-rotulo">Imóveis Pendentes</span>
+            <div id="spImoPend" class="ul_chart_height ul_chart_spark"><canvas></canvas></div>
         </div>
     </a>
     <a href="{{ route('admin.pedidos', ['estado' => 'novo']) }}" class="text-decoration-none">
         <div class="ul-painel-stat" {{ $stats['pedidos_novos'] > 0 ? 'style="border-left:4px solid #ef4444;"' : '' }}>
             <span class="ul-painel-stat-numero">{{ $stats['pedidos_novos'] }}</span>
             <span class="ul-painel-stat-rotulo">Pedidos Novos</span>
+            <div id="spPedidos" class="ul_chart_height ul_chart_spark"><canvas></canvas></div>
         </div>
     </a>
 </div>
 
 <!-- Gráficos -->
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:20px;">
+    <div class="ul-painel-card">
+        <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Evolução — Imóveis, Imobiliárias e Mensagens (12 meses)</h3>
+        <div id="chartEvolucao" class="ul_chart_height"><canvas></canvas></div>
+    </div>
     <div class="ul-painel-card">
         <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Imóveis por Estado</h3>
         <div id="chartImoveisEstado" class="ul_chart_height"><canvas></canvas></div>
     </div>
-    <div class="ul-painel-card">
-        <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Imobiliárias por Estado</h3>
-        <div id="chartImobiliariasEstado" class="ul_chart_height"><canvas></canvas></div>
-    </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+<div style="display:grid;grid-template-columns:2fr 1fr;grid-auto-flow:dense;gap:20px;margin-bottom:20px;">
     <div class="ul-painel-card">
         <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Pedidos por Estado</h3>
         <div id="chartPedidosEstado" class="ul_chart_height"><canvas></canvas></div>
@@ -80,6 +85,17 @@
     <div class="ul-painel-card">
         <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Imobiliárias por Mês</h3>
         <div id="chartImobiliariasMes" class="ul_chart_height"><canvas></canvas></div>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:2fr 1fr;grid-auto-flow:dense;gap:20px;margin-bottom:20px;">
+    <div class="ul-painel-card">
+        <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Imóveis — Aprovados vs Pendentes por Mês</h3>
+        <div id="chartImoveisMesEstado" class="ul_chart_height"><canvas></canvas></div>
+    </div>
+    <div class="ul-painel-card">
+        <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Imobiliárias por Estado</h3>
+        <div id="chartImobiliariasEstado" class="ul_chart_height"><canvas></canvas></div>
     </div>
 </div>
 
@@ -136,6 +152,14 @@ document.addEventListener('DOMContentLoaded', function() {
     var imoveisEstado = @json(
         collect($chartData['imoveis_por_estado'])->map(fn($total, $estado) => ['label' => ucfirst($estado), 'value' => (int) $total])->values()
     );
+    var meses = @json(collect($chartData['imoveis_mes'])->keys());
+    var labelsMes = meses.map(function(m) { return QNBCharts.labelMes(m); });
+    var imoveisMesArr = @json(collect($chartData['imoveis_mes'])->values()->map(fn($v) => (int) $v));
+    var impAprovadosMes = @json(collect($chartData['imoveis_aprovados_mes'])->values()->map(fn($v) => (int) $v));
+    var impPendentesMes = @json(collect($chartData['imoveis_pendentes_mes'])->values()->map(fn($v) => (int) $v));
+    var imobiliariasMesArr = @json(collect($chartData['imobiliarias_por_mes'])->values()->map(fn($v) => (int) $v));
+    var mensagensMesArr = @json(collect($chartData['mensagens_por_mes'])->values()->map(fn($v) => (int) $v));
+    var pedidosMesArr = @json(collect($chartData['pedidos_mes'])->values()->map(fn($v) => (int) $v));
     var imobiliariasEstado = @json(
         collect($chartData['imobiliarias_por_estado'])->map(fn($total, $estado) => ['label' => ucfirst($estado), 'value' => (int) $total])->values()
     );
@@ -158,6 +182,26 @@ document.addEventListener('DOMContentLoaded', function() {
     QNBCharts.makeBar(document.getElementById('chartImoveisProvincia'), imoveisProvincia, true);
     QNBCharts.makeArea(document.getElementById('chartMensagensMes'), mensagensMes, 'Mensagens');
     QNBCharts.makeBar(document.getElementById('chartImobiliariasMes'), imobiliariasMes, false);
+
+    // Project Report — evolução multi-série (Duralux)
+    QNBCharts.makeMultiArea(document.getElementById('chartEvolucao'), labelsMes, [
+        { name: 'Imóveis', data: imoveisMesArr },
+        { name: 'Imobiliárias', data: imobiliariasMesArr },
+        { name: 'Mensagens', data: mensagensMesArr }
+    ]);
+
+    // Website Analytics — bar 2 séries (Duralux)
+    QNBCharts.makeGroupedBar(document.getElementById('chartImoveisMesEstado'), labelsMes, [
+        { name: 'Aprovados', data: impAprovadosMes },
+        { name: 'Pendentes', data: impPendentesMes }
+    ], { colors: ['#e2e8f0', '#e94e19'] });
+
+    // Sparklines nos KPIs (mini cards Duralux)
+    QNBCharts.makeSparkline(document.getElementById('spImobiliarias'), imobiliariasMesArr, '#064471');
+    QNBCharts.makeSparkline(document.getElementById('spImoveis'), imoveisMesArr, '#e94e19');
+    QNBCharts.makeSparkline(document.getElementById('spImpPend'), impPendentesMes, '#f59e0b');
+    QNBCharts.makeSparkline(document.getElementById('spImoPend'), impPendentesMes, '#f59e0b');
+    QNBCharts.makeSparkline(document.getElementById('spPedidos'), pedidosMesArr, '#ef4444');
 });
 </script>
 @endpush

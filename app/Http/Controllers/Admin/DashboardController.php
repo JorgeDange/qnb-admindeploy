@@ -45,6 +45,11 @@ class DashboardController extends Controller
             'imoveis_por_provincia' => Imovel::select('provincia', DB::raw('count(*) as total'))->groupBy('provincia')->orderBy('total', 'desc')->take(8)->pluck('total', 'provincia'),
             'mensagens_por_mes' => $this->mensagensPorMes(),
             'imobiliarias_por_mes' => $this->imobiliariasPorMes(),
+            // Novas séries mensais (estilo Duralux: Website Analytics + Project Report)
+            'imoveis_aprovados_mes' => $this->imoveisMesPorEstado('aprovado'),
+            'imoveis_pendentes_mes' => $this->imoveisMesPorEstado('pendente'),
+            'imoveis_mes' => $this->registrosPorMes(Imovel::class),
+            'pedidos_mes' => $this->registrosPorMes(PedidoAtivacao::class),
         ];
 
         return view('admin.dashboard', compact('stats', 'recentes', 'chartData', 'periodo'));
@@ -74,14 +79,40 @@ class DashboardController extends Controller
 
     private function imobiliariasPorMes(): array
     {
+        return $this->registrosPorMes(Imobiliaria::class);
+    }
+
+    /** Contagem mensal de um model (últimos 12 meses, incl. vazios). */
+    private function registrosPorMes(string $model): array
+    {
         $meses = $this->ultimosMeses(12);
         $inicio = now()->subMonths(11)->startOfMonth();
 
-        Imobiliaria::where('created_at', '>=', $inicio)
+        $model::where('created_at', '>=', $inicio)
             ->select('created_at')
             ->get()
-            ->each(function ($i) use (&$meses) {
-                $chave = $i->created_at->format('Y-m');
+            ->each(function ($r) use (&$meses) {
+                $chave = $r->created_at->format('Y-m');
+                if (isset($meses[$chave])) {
+                    $meses[$chave]++;
+                }
+            });
+
+        return $meses;
+    }
+
+    /** Contagem mensal de imóveis num estado específico (p/ bar 2 séries). */
+    private function imoveisMesPorEstado(string $estado): array
+    {
+        $meses = $this->ultimosMeses(12);
+        $inicio = now()->subMonths(11)->startOfMonth();
+
+        Imovel::where('estado', $estado)
+            ->where('created_at', '>=', $inicio)
+            ->select('created_at')
+            ->get()
+            ->each(function ($r) use (&$meses) {
+                $chave = $r->created_at->format('Y-m');
                 if (isset($meses[$chave])) {
                     $meses[$chave]++;
                 }

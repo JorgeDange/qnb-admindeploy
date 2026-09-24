@@ -30,6 +30,25 @@
         return null;
     }
 
+    /** '#e94e19' + 0.1 → 'rgba(233, 78, 25, 0.1)' */
+    function hexToRgba(hex, alpha) {
+        var h = String(hex).replace('#', '');
+        if (h.length === 3) {
+            h = h.split('').map(function (c) { return c + c; }).join('');
+        }
+        var n = parseInt(h, 16);
+        return 'rgba(' + ((n >> 16) & 255) + ', ' + ((n >> 8) & 255) + ', ' + (n & 255) + ', ' + alpha + ')';
+    }
+
+    var MESES_PT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    /** Converte 'Y-m' (ex.: 2026-03) em 'Mar/26'. */
+    function labelMes(chave) {
+        var partes = String(chave).split('-');
+        if (partes.length !== 2) return chave;
+        var m = parseInt(partes[1], 10);
+        return (MESES_PT[m - 1] || partes[1]) + '/' + String(partes[0]).slice(2);
+    }
+
     window.QNBCharts = {
         palette: [success, warning, danger, purple, primary, info, secondary],
         colors: {
@@ -43,6 +62,8 @@
             grid: grid,
             texto: texto
         },
+
+        labelMes: labelMes,
 
         makeDonut: function (el, items) {
             var canvas = resolveCanvas(el);
@@ -122,6 +143,161 @@
                     scales: {
                         x: { grid: { display: false } },
                         y: { grid: { color: grid }, beginAtZero: true }
+                    }
+                }
+            });
+        },
+
+        /** Área multi-série (estilo Project Report / Visitors Overview do Duralux).
+         *  series: [{ name, data: [num...] }...] — todas com o mesmo comprimento de labels. */
+        makeMultiArea: function (el, labels, series, opts) {
+            var canvas = resolveCanvas(el);
+            if (!canvas || !labels || !labels.length || !series || !series.length) return;
+            opts = opts || {};
+            var cores = opts.colors || [secondary, success, warning];
+            return new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: series.map(function (s, i) {
+                        return {
+                            label: s.name,
+                            data: s.data,
+                            borderColor: cores[i % cores.length],
+                            backgroundColor: hexToRgba(cores[i % cores.length], 0.08),
+                            borderWidth: 2,
+                            pointRadius: 2,
+                            pointBackgroundColor: cores[i % cores.length],
+                            fill: true,
+                            tension: 0.35
+                        };
+                    })
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } }
+                    },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { grid: { color: grid }, beginAtZero: true }
+                    }
+                }
+            });
+        },
+
+        /** Bar agrupado 2+ séries (estilo Website Analytics do Duralux).
+         *  series: [{ name, data: [num...] }...] */
+        makeGroupedBar: function (el, labels, series, opts) {
+            var canvas = resolveCanvas(el);
+            if (!canvas || !labels || !labels.length || !series || !series.length) return;
+            opts = opts || {};
+            var cores = opts.colors || ['#e2e8f0', primary];
+            return new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: series.map(function (s, i) {
+                        return {
+                            label: s.name,
+                            data: s.data,
+                            backgroundColor: cores[i % cores.length],
+                            borderRadius: 5,
+                            maxBarThickness: 26
+                        };
+                    })
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } }
+                    },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { grid: { color: grid }, beginAtZero: true }
+                    }
+                }
+            });
+        },
+
+        /** Combo bar+line (estilo Payment Records do Duralux).
+         *  seriesBar: [{ name, data, color }] ; seriesLine: { name, data, color } */
+        makeCombo: function (el, labels, seriesBar, seriesLine, opts) {
+            var canvas = resolveCanvas(el);
+            if (!canvas || !labels || !labels.length) return;
+            opts = opts || {};
+            return new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: seriesBar.map(function (s) {
+                        return {
+                            label: s.name,
+                            data: s.data,
+                            backgroundColor: s.color,
+                            borderRadius: 5,
+                            maxBarThickness: 26
+                        };
+                    }).concat([
+                        {
+                            label: seriesLine.name,
+                            data: seriesLine.data,
+                            type: 'line',
+                            borderColor: seriesLine.color,
+                            backgroundColor: seriesLine.color,
+                            borderWidth: 2.5,
+                            pointRadius: 3,
+                            pointBackgroundColor: seriesLine.color,
+                            tension: 0.35,
+                            fill: false
+                        }
+                    ])
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } }
+                    },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { grid: { color: grid }, beginAtZero: true }
+                    }
+                }
+            });
+        },
+
+        /** Sparkline área (estilo KPIs Duralux) — recebe array de números; sem eixos nem legend. */
+        makeSparkline: function (el, values, color) {
+            var canvas = resolveCanvas(el);
+            if (!canvas || !values || !values.length) return;
+            color = color || primary;
+            return new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: values.map(function (_, i) { return i; }),
+                    datasets: [{
+                        data: values,
+                        borderColor: color,
+                        backgroundColor: hexToRgba(color, 0.12),
+                        borderWidth: 1.5,
+                        pointRadius: 0,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false, beginAtZero: true }
                     }
                 }
             });

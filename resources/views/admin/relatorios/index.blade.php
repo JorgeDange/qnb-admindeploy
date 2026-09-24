@@ -43,10 +43,16 @@
     </div>
 </div>
 
-<!-- Payment Records — combo bar+line (Duralux) -->
-<div class="ul-painel-card" style="margin-bottom:20px;">
-    <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Pagamentos por Mês — Confirmados vs Pendentes/Rejeitados</h3>
-    <div id="chartPagamentosMes" class="ul_chart_height"><canvas></canvas></div>
+<!-- Payment Records — combo bar+line (Duralux) + Faturas por Estado -->
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:20px;">
+    <div class="ul-painel-card">
+        <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Pagamentos por Mês — Confirmados vs Pendentes/Rejeitados</h3>
+        <div id="chartPagamentosMes" class="ul_chart_height"><canvas></canvas></div>
+    </div>
+    <div class="ul-painel-card">
+        <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Faturas por Estado</h3>
+        <div id="chartFaturasEstado" class="ul_chart_height"><canvas></canvas></div>
+    </div>
 </div>
 
 <!-- Detalhe tabular -->
@@ -130,6 +136,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var pagConfirmadosMes = @json(collect($estatisticas['pagamentos_confirmados_mes'] ?? [])->values()->map(fn($v) => (int) $v));
     var pagPendentesMes = @json(collect($estatisticas['pagamentos_pendentes_mes'] ?? [])->values()->map(fn($v) => (int) $v));
     var pagRejeitadosMes = @json(collect($estatisticas['pagamentos_rejeitados_mes'] ?? [])->values()->map(fn($v) => (int) $v));
+    var faturasEstado = @json(
+        collect($estatisticas['faturas_por_estado'] ?? [])->map(fn($i) => ['label' => ucfirst($i->estado), 'value' => (int) $i->total])->values()
+    );
 
     QNBCharts.makeDonut(document.getElementById('chartImoveisEstado'), imoveisEstado);
     QNBCharts.makeDonut(document.getElementById('chartImobiliariasEstado'), imobiliariasEstado);
@@ -149,6 +158,9 @@ document.addEventListener('DOMContentLoaded', function() {
         { name: 'Pendentes', data: pagPendentesMes, color: '#f59e0b' },
         { name: 'Rejeitados', data: pagRejeitadosMes, color: '#e2e8f0' }
     ], { name: 'Confirmados', data: pagConfirmadosMes, color: '#10b981' });
+
+    // Faturas por Estado — donut (Leads Overview)
+    QNBCharts.makeDonut(document.getElementById('chartFaturasEstado'), faturasEstado);
 });
 </script>
 @endpush

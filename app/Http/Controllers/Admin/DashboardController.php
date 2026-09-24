@@ -7,6 +7,7 @@ use App\Models\Imobiliaria;
 use App\Models\Imovel;
 use App\Models\Mensagem;
 use App\Models\PedidoAtivacao;
+use App\Models\Visita;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -46,10 +47,14 @@ class DashboardController extends Controller
             'mensagens_por_mes' => $this->mensagensPorMes(),
             'imobiliarias_por_mes' => $this->imobiliariasPorMes(),
             // Novas séries mensais (estilo Duralux: Website Analytics + Project Report)
-            'imoveis_aprovados_mes' => $this->imoveisMesPorEstado('aprovado'),
-            'imoveis_pendentes_mes' => $this->imoveisMesPorEstado('pendente'),
+            'imoveis_aprovados_mes' => $this->registrosMesPorEstado(Imovel::class, 'aprovado'),
+            'imoveis_pendentes_mes' => $this->registrosMesPorEstado(Imovel::class, 'pendente'),
             'imoveis_mes' => $this->registrosPorMes(Imovel::class),
             'pedidos_mes' => $this->registrosPorMes(PedidoAtivacao::class),
+            // Visitas (estilo Visitors Overview) — usa data_visita como referência
+            'visitas_pendentes_mes' => $this->registrosMesPorEstado(Visita::class, 'pendente', 'data_visita'),
+            'visitas_confirmadas_mes' => $this->registrosMesPorEstado(Visita::class, 'confirmada', 'data_visita'),
+            'visitas_concluidas_mes' => $this->registrosMesPorEstado(Visita::class, 'concluida', 'data_visita'),
         ];
 
         return view('admin.dashboard', compact('stats', 'recentes', 'chartData', 'periodo'));
@@ -82,17 +87,17 @@ class DashboardController extends Controller
         return $this->registrosPorMes(Imobiliaria::class);
     }
 
-    /** Contagem mensal de um model (últimos 12 meses, incl. vazios). */
-    private function registrosPorMes(string $model): array
+    /** Contagem mensal de um model (últimos 12 meses, incl. vazios). $coluna: data de referência. */
+    private function registrosPorMes(string $model, string $coluna = 'created_at'): array
     {
         $meses = $this->ultimosMeses(12);
         $inicio = now()->subMonths(11)->startOfMonth();
 
-        $model::where('created_at', '>=', $inicio)
-            ->select('created_at')
+        $model::where($coluna, '>=', $inicio)
+            ->select($coluna)
             ->get()
-            ->each(function ($r) use (&$meses) {
-                $chave = $r->created_at->format('Y-m');
+            ->each(function ($r) use (&$meses, $coluna) {
+                $chave = $r->{$coluna}->format('Y-m');
                 if (isset($meses[$chave])) {
                     $meses[$chave]++;
                 }
@@ -101,18 +106,18 @@ class DashboardController extends Controller
         return $meses;
     }
 
-    /** Contagem mensal de imóveis num estado específico (p/ bar 2 séries). */
-    private function imoveisMesPorEstado(string $estado): array
+    /** Contagem mensal de registos num estado específico (p/ séries agrupadas). */
+    private function registrosMesPorEstado(string $model, string $estado, string $coluna = 'created_at'): array
     {
         $meses = $this->ultimosMeses(12);
         $inicio = now()->subMonths(11)->startOfMonth();
 
-        Imovel::where('estado', $estado)
-            ->where('created_at', '>=', $inicio)
-            ->select('created_at')
+        $model::where('estado', $estado)
+            ->where($coluna, '>=', $inicio)
+            ->select($coluna)
             ->get()
-            ->each(function ($r) use (&$meses) {
-                $chave = $r->created_at->format('Y-m');
+            ->each(function ($r) use (&$meses, $coluna) {
+                $chave = $r->{$coluna}->format('Y-m');
                 if (isset($meses[$chave])) {
                     $meses[$chave]++;
                 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Fatura;
 use App\Models\Imobiliaria;
 use App\Models\Imovel;
 use App\Models\Mensagem;
@@ -24,9 +25,10 @@ class RelatorioController extends Controller
             // Séries mensais (estilo Duralux: Project Report + Payment Records)
             'imoveis_por_mes' => $this->registrosPorMes(Imovel::class),
             'imobiliarias_por_mes' => $this->registrosPorMes(Imobiliaria::class),
-            'pagamentos_confirmados_mes' => $this->pagamentosMesPorEstado('confirmado'),
-            'pagamentos_pendentes_mes' => $this->pagamentosMesPorEstado('pendente'),
-            'pagamentos_rejeitados_mes' => $this->pagamentosMesPorEstado('rejeitado'),
+            'pagamentos_confirmados_mes' => $this->registrosMesPorEstado(Pagamento::class, 'confirmado'),
+            'pagamentos_pendentes_mes' => $this->registrosMesPorEstado(Pagamento::class, 'pendente'),
+            'pagamentos_rejeitados_mes' => $this->registrosMesPorEstado(Pagamento::class, 'rejeitado'),
+            'faturas_por_estado' => Fatura::select('estado', DB::raw('count(*) as total'))->groupBy('estado')->get(),
         ];
 
         return view('admin.relatorios.index', compact('estatisticas'));
@@ -156,8 +158,8 @@ class RelatorioController extends Controller
         return $meses;
     }
 
-    /** Contagem mensal de pagamentos num estado específico (p/ combo Payment Records). */
-    private function pagamentosMesPorEstado(string $estado): array
+    /** Contagem mensal de registos num estado específico (p/ séries agrupadas). */
+    private function registrosMesPorEstado(string $model, string $estado, string $coluna = 'created_at'): array
     {
         $meses = [];
         for ($i = 11; $i >= 0; $i--) {
@@ -165,12 +167,12 @@ class RelatorioController extends Controller
         }
         $inicio = now()->subMonths(11)->startOfMonth();
 
-        Pagamento::where('estado', $estado)
-            ->where('created_at', '>=', $inicio)
-            ->select('created_at')
+        $model::where('estado', $estado)
+            ->where($coluna, '>=', $inicio)
+            ->select($coluna)
             ->get()
-            ->each(function ($r) use (&$meses) {
-                $chave = $r->created_at->format('Y-m');
+            ->each(function ($r) use (&$meses, $coluna) {
+                $chave = $r->{$coluna}->format('Y-m');
                 if (isset($meses[$chave])) {
                     $meses[$chave]++;
                 }

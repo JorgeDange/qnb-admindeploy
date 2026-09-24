@@ -83,8 +83,8 @@
         <div id="chartMensagensMes" class="ul_chart_height"><canvas></canvas></div>
     </div>
     <div class="ul-painel-card">
-        <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Imobiliárias por Mês</h3>
-        <div id="chartImobiliariasMes" class="ul_chart_height"><canvas></canvas></div>
+        <h3 class="ul-painel-card-titulo" style="margin-bottom:16px;">Visitas por Mês (12 meses)</h3>
+        <div id="chartVisitasMes" class="ul_chart_height"><canvas></canvas></div>
     </div>
 </div>
 
@@ -160,6 +160,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var imobiliariasMesArr = @json(collect($chartData['imobiliarias_por_mes'])->values()->map(fn($v) => (int) $v));
     var mensagensMesArr = @json(collect($chartData['mensagens_por_mes'])->values()->map(fn($v) => (int) $v));
     var pedidosMesArr = @json(collect($chartData['pedidos_mes'])->values()->map(fn($v) => (int) $v));
+    var visitasPendentesArr = @json(collect($chartData['visitas_pendentes_mes'])->values()->map(fn($v) => (int) $v));
+    var visitasConfirmadasArr = @json(collect($chartData['visitas_confirmadas_mes'])->values()->map(fn($v) => (int) $v));
+    var visitasConcluidasArr = @json(collect($chartData['visitas_concluidas_mes'])->values()->map(fn($v) => (int) $v));
     var imobiliariasEstado = @json(
         collect($chartData['imobiliarias_por_estado'])->map(fn($total, $estado) => ['label' => ucfirst($estado), 'value' => (int) $total])->values()
     );
@@ -181,7 +184,13 @@ document.addEventListener('DOMContentLoaded', function() {
     QNBCharts.makeDonut(document.getElementById('chartPedidosEstado'), pedidosEstado);
     QNBCharts.makeBar(document.getElementById('chartImoveisProvincia'), imoveisProvincia, true);
     QNBCharts.makeArea(document.getElementById('chartMensagensMes'), mensagensMes, 'Mensagens');
-    QNBCharts.makeBar(document.getElementById('chartImobiliariasMes'), imobiliariasMes, false);
+
+    // Visitors Overview — visitas 3 séries (Duralux)
+    QNBCharts.makeMultiArea(document.getElementById('chartVisitasMes'), labelsMes, [
+        { name: 'Pendentes', data: visitasPendentesArr },
+        { name: 'Confirmadas', data: visitasConfirmadasArr },
+        { name: 'Concluídas', data: visitasConcluidasArr }
+    ]);
 
     // Project Report — evolução multi-série (Duralux)
     QNBCharts.makeMultiArea(document.getElementById('chartEvolucao'), labelsMes, [

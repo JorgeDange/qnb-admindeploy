@@ -43,5 +43,5 @@
     </table>
 </div>
 
-{{ $threads->links() }}
+{{ $threads->links('pagination::painel') }}
 @endsection

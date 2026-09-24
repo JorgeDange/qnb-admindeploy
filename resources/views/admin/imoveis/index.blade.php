@@ -96,7 +96,7 @@
         @endforeach
 
         <div class="mt-3">
-            {{ $imoveis->withQueryString()->links() }}
+            {{ $imoveis->withQueryString()->links('pagination::painel') }}
         </div>
     @else
         <div class="ul-painel-vazio">

@@ -34,5 +34,5 @@
     </table>
 </div>
 
-{{ $sessoes->links() }}
+{{ $sessoes->links('pagination::painel') }}
 @endsection

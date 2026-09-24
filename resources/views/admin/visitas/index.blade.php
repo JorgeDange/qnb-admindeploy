@@ -87,5 +87,5 @@
     </table>
 </div>
 
-{{ $visitas->withQueryString()->links() }}
+{{ $visitas->withQueryString()->links('pagination::painel') }}
 @endsection

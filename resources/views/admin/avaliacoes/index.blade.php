@@ -84,5 +84,5 @@
     </table>
 </div>
 
-{{ $avaliacoes->withQueryString()->links() }}
+{{ $avaliacoes->withQueryString()->links('pagination::painel') }}
 @endsection

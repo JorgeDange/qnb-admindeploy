@@ -111,5 +111,5 @@
     </table>
 </div>
 
-{{ $subscricoes->withQueryString()->links() }}
+{{ $subscricoes->withQueryString()->links('pagination::painel') }}
 @endsection

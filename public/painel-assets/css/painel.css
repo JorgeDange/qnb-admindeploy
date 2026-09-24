@@ -290,6 +290,7 @@ body {
   border-radius: 16px;
   padding: 18px;
   text-align: center;
+  overflow: hidden;
 }
 .ul-painel-stat-numero {
   display: block;
@@ -1548,10 +1549,15 @@ body {
 }
 /* ---- 38. Graficos Chart.js ---- */
 /* O canvas do Chart.js gere a propria altura via maintainAspectRatio:false;
-   o contentor fixa a altura do bloco do grafico. */
+   o contentor fixa a altura do bloco do grafico.
+   height (nao min-height): com min-height o card crescia quando o Chart.js
+   media o canvas em fases de layout successivas — o data/meta ficava cada vez
+   mais alto e empurrava o rodape do card. Com height fixo + overflow:hidden
+   no card, o grafico cresce sempre DENTRO da mesma janela. */
 .ul_chart_height {
   position: relative;
   height: 260px;
+  overflow: hidden;
 }
 @media (max-width: 768px) {
   .ul_chart_height {
@@ -1559,7 +1565,76 @@ body {
   }
 }
 /* Sparkline dos KPIs (mini card Duralux) */
+/* Altura fixa (nao min-height) + overflow:hidden: o sparkline cresce sempre
+   dentro dos mesmos 46px, sem empurrar o rodape do card KPI. */
 .ul_chart_spark {
   height: 46px;
+  overflow: hidden;
   margin-top: 8px;
+}
+
+/* Estado vazio dos gráficos (ex.: "Pedidos por Estado" sem registos) */
+.ul_chart_sem-dados {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ul-gray2);
+  font-size: 13px;
+  text-align: center;
+  padding: 12px;
+  pointer-events: none;
+}
+
+/* ---- 39. Paginação (setas ‹ › e números de página) ---- */
+/* View: resources/views/vendor/pagination/painel.blade.php.
+   O default do Laravel usa classes Tailwind, que não existem aqui
+   (o painel não carrega Tailwind), pelo que as setas ficavam "cruas". */
+.ul-painel-paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 20px 0;
+}
+.ul-painel-paginacao-item,
+.ul-painel-paginacao-seta,
+.ul-painel-paginacao-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid var(--ul-gray);
+  border-radius: 8px;
+  background-color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ul-secondary);
+  text-decoration: none;
+  line-height: 1;
+  user-select: none;
+}
+.ul-painel-paginacao-ellipsis {
+  border-color: transparent;
+  background: transparent;
+  color: var(--ul-gray2);
+}
+a.ul-painel-paginacao-item:hover,
+a.ul-painel-paginacao-seta:hover {
+  border-color: var(--ul-primary);
+  color: var(--ul-primary);
+  background-color: var(--ul-gray);
+}
+.ul-painel-paginacao-item--ativo {
+  background: var(--ul-gradient);
+  border-color: var(--ul-primary);
+  color: var(--white);
+}
+.ul-painel-paginacao-seta--desativada {
+  opacity: 0.4;
+  cursor: not-allowed;
 }

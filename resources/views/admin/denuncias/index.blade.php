@@ -69,5 +69,5 @@
     </table>
 </div>
 
-{{ $denuncias->withQueryString()->links() }}
+{{ $denuncias->withQueryString()->links('pagination::painel') }}
 @endsection

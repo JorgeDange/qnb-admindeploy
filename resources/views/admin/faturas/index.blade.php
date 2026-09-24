@@ -69,5 +69,5 @@
     </table>
 </div>
 
-{{ $faturas->links() }}
+{{ $faturas->links('pagination::painel') }}
 @endsection

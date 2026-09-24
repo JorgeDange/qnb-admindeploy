@@ -78,5 +78,5 @@
     </table>
 </div>
 
-{{ $logs->withQueryString()->links() }}
+{{ $logs->withQueryString()->links('pagination::painel') }}
 @endsection

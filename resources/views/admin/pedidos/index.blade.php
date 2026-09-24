@@ -85,7 +85,7 @@
     </div>
 
     <div class="p-3">
-        {{ $pedidos->withQueryString()->links() }}
+        {{ $pedidos->withQueryString()->links('pagination::painel') }}
     </div>
     @else
     <div class="ul-painel-vazio">

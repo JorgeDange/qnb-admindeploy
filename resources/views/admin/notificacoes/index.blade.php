@@ -52,5 +52,5 @@
     </table>
 </div>
 
-{{ $notificacoes->links() }}
+{{ $notificacoes->links('pagination::painel') }}
 @endsection

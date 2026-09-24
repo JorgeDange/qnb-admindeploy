@@ -40,6 +40,19 @@
         return 'rgba(' + ((n >> 16) & 255) + ', ' + ((n >> 8) & 255) + ', ' + (n & 255) + ', ' + alpha + ')';
     }
 
+    /** Renderiza 'Sem dados' dentro do contentor quando a série está vazia
+     *  (antes o makeDonut/makeBar/etc. saíam em silêncio e o card ficava em branco). */
+    function mostrarSemDados(el) {
+        var container = (el && el.setAttribute) ? el : null;
+        if (container && !container.querySelector('.ul_chart_sem-dados')) {
+            var aviso = document.createElement('div');
+            aviso.className = 'ul_chart_sem-dados';
+            aviso.textContent = 'Sem dados para apresentar';
+            container.appendChild(aviso);
+        }
+        return null;
+    }
+
     var MESES_PT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     /** Converte 'Y-m' (ex.: 2026-03) em 'Mar/26'. */
     function labelMes(chave) {
@@ -67,7 +80,7 @@
 
         makeDonut: function (el, items) {
             var canvas = resolveCanvas(el);
-            if (!canvas || !items || !items.length) return;
+            if (!canvas || !items || !items.length) return mostrarSemDados(el);
             return new Chart(canvas, {
                 type: 'doughnut',
                 data: {
@@ -89,7 +102,7 @@
 
         makeBar: function (el, items, horizontal) {
             var canvas = resolveCanvas(el);
-            if (!canvas || !items || !items.length) return;
+            if (!canvas || !items || !items.length) return mostrarSemDados(el);
             return new Chart(canvas, {
                 type: 'bar',
                 data: {
@@ -117,7 +130,7 @@
 
         makeArea: function (el, items, label, color, rgba) {
             var canvas = resolveCanvas(el);
-            if (!canvas || !items || !items.length) return;
+            if (!canvas || !items || !items.length) return mostrarSemDados(el);
             color = color || purple;
             rgba = rgba || 'rgba(139, 92, 246, 0.1)';
             return new Chart(canvas, {
@@ -152,7 +165,7 @@
          *  series: [{ name, data: [num...] }...] — todas com o mesmo comprimento de labels. */
         makeMultiArea: function (el, labels, series, opts) {
             var canvas = resolveCanvas(el);
-            if (!canvas || !labels || !labels.length || !series || !series.length) return;
+            if (!canvas || !labels || !labels.length || !series || !series.length) return mostrarSemDados(el);
             opts = opts || {};
             var cores = opts.colors || [secondary, success, warning];
             return new Chart(canvas, {
@@ -192,7 +205,7 @@
          *  series: [{ name, data: [num...] }...] */
         makeGroupedBar: function (el, labels, series, opts) {
             var canvas = resolveCanvas(el);
-            if (!canvas || !labels || !labels.length || !series || !series.length) return;
+            if (!canvas || !labels || !labels.length || !series || !series.length) return mostrarSemDados(el);
             opts = opts || {};
             var cores = opts.colors || ['#e2e8f0', primary];
             return new Chart(canvas, {
@@ -228,7 +241,7 @@
          *  seriesBar: [{ name, data, color }] ; seriesLine: { name, data, color } */
         makeCombo: function (el, labels, seriesBar, seriesLine, opts) {
             var canvas = resolveCanvas(el);
-            if (!canvas || !labels || !labels.length) return;
+            if (!canvas || !labels || !labels.length) return mostrarSemDados(el);
             opts = opts || {};
             return new Chart(canvas, {
                 type: 'bar',

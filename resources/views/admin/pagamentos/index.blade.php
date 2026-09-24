@@ -73,5 +73,5 @@
     </table>
 </div>
 
-{{ $pagamentos->links() }}
+{{ $pagamentos->links('pagination::painel') }}
 @endsection
